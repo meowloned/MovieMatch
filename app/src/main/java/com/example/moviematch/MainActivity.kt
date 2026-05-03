@@ -1,47 +1,32 @@
 package com.example.moviematch
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.moviematch.ui.theme.MovieMatchTheme
+import com.example.moviematch.data.repositoryImpl.AuthRepositoryImpl
+import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
+import com.example.moviematch.domain.usecases.LoginUseCase
+import com.example.moviematch.domain.usecases.LogoutUseCase
+import com.example.moviematch.domain.usecases.RegisterUseCase
+import com.example.moviematch.presentation.ViewModel.AuthViewModel
+import com.example.moviematch.presentation.navigation.AppNavGraph
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        val authRepository = AuthRepositoryImpl()
+
+        val authViewModel = AuthViewModel(
+            loginUseCase = LoginUseCase(authRepository),
+            registerUseCase = RegisterUseCase(authRepository),
+            getCurrentIdUseCase = GetCurrentIdUseCase(authRepository),
+            logoutUseCase = LogoutUseCase(authRepository)
+        )
+
         setContent {
-            MovieMatchTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            AppNavGraph(
+                authViewModel = authViewModel
+            )
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MovieMatchTheme {
-        Greeting("Android")
     }
 }
