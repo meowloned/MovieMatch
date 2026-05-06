@@ -8,12 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.moviematch.presentation.UI.screens.auth.LoginScreen
 import com.example.moviematch.presentation.UI.screens.auth.RegisterScreen
+import com.example.moviematch.presentation.UI.screens.main.MainScreen
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
+import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 
 
 @Composable
 fun AppNavGraph(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    filmsViewModel: FilmsViewModel
 ) {
     val navController = rememberNavController()
     val state = authViewModel.state
@@ -52,7 +55,7 @@ fun AppNavGraph(
         }
 
         composable("main") {
-            Text("Главный экран")
+            MainScreen(filmsViewModel = filmsViewModel)
         }
     }
 }
