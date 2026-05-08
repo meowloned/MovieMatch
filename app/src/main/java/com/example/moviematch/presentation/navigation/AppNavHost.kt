@@ -1,6 +1,5 @@
 package com.example.moviematch.presentation.navigation
 
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
@@ -8,15 +7,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.moviematch.presentation.UI.screens.auth.LoginScreen
 import com.example.moviematch.presentation.UI.screens.auth.RegisterScreen
+import com.example.moviematch.presentation.UI.screens.main.FavouritesScreen
 import com.example.moviematch.presentation.UI.screens.main.MainScreen
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
+import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 
 
 @Composable
 fun AppNavGraph(
     authViewModel: AuthViewModel,
-    filmsViewModel: FilmsViewModel
+    filmsViewModel: FilmsViewModel,
+    favouritesViewModel: FavouritesViewModel
 ) {
     val navController = rememberNavController()
     val state = authViewModel.state
@@ -57,7 +59,20 @@ fun AppNavGraph(
         composable("main") {
             MainScreen(
                 filmsViewModel = filmsViewModel,
-                onProfileClick = {navController.navigate("login")})
+                onProfileClick = {navController.navigate("login")},
+                onMainClick = {navController.navigate("main")},
+                onFavClick = {navController.navigate("favourites")}
+            )
+        }
+
+        composable("favourites"){
+            FavouritesScreen(
+                favouritesViewModel = favouritesViewModel,
+                filmsViewModel = filmsViewModel,
+                onProfileClick = {navController.navigate("login")},
+                onMainClick = {navController.navigate("main")},
+                onFavClick = {navController.navigate("favourites")}
+                )
         }
     }
 }

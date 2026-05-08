@@ -42,7 +42,7 @@ fun LoginScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = Color(0xFF2E3E6D))
             }
         }
         false -> {

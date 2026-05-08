@@ -10,11 +10,14 @@ import com.example.moviematch.domain.repository.FavouriteFilmsRepository
 import com.example.moviematch.domain.repository.FilmsRepository
 import com.example.moviematch.domain.usecases.AddFavUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
+import com.example.moviematch.domain.usecases.GetFavsUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.domain.usecases.LoginUseCase
 import com.example.moviematch.domain.usecases.LogoutUseCase
 import com.example.moviematch.domain.usecases.RegisterUseCase
+import com.example.moviematch.domain.usecases.RemoveFavUseCase
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
+import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.navigation.AppNavGraph
 
@@ -31,9 +34,14 @@ class MainActivity : ComponentActivity() {
             logoutUseCase = LogoutUseCase(authRepository)
         )
         val filmJsonDataSource = FilmJsonDataSource(this)
-        val favouriteFilmsRepository = FavouriteFilmsRepositoryImpl()
         val filmsRepository = FilmsRepositoryImpl(
             dataSource = filmJsonDataSource
+        )
+        val favouriteFilmsRepository = FavouriteFilmsRepositoryImpl()
+        val favouritesViewModel = FavouritesViewModel(
+            getFavsUseCase = GetFavsUseCase(favouriteFilmsRepository),
+            removeFavUseCase = RemoveFavUseCase(favouriteFilmsRepository),
+            getCurrentIdUseCase = GetCurrentIdUseCase(authRepository)
         )
         val filmsViewModel = FilmsViewModel(getFilmsUseCase = GetFilmsUseCase(filmsRepository),
             addFavUseCase = AddFavUseCase(favouriteFilmsRepository),
@@ -41,7 +49,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppNavGraph(
                 authViewModel = authViewModel,
-                filmsViewModel = filmsViewModel
+                filmsViewModel = filmsViewModel,
+                favouritesViewModel = favouritesViewModel
             )
         }
     }

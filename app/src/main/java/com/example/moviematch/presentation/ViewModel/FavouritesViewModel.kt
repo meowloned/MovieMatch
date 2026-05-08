@@ -41,21 +41,21 @@ class FavouritesViewModel(
         }
     }
 
-    fun removeFav(filmId: String){
-        state = state.copy(isLoading = true)
+    fun removeFav(filmId: String) {
+        val userId = getCurrentIdUseCase()
         viewModelScope.launch {
-            try{
+            try {
                 if (userId != null) {
                     removeFavUseCase(userId, filmId)
-                    state = state.copy(isLoading = false, favs = getFavsUseCase(userId))
+                    state = state.copy(
+                        isLoading = false,
+                        favs = state.favs.filter { it.filmId != filmId }
+                    )
+                } else {
+                    state = state.copy(errorMessage = "Ошибка удаления из избранного")
                 }
-                else{
-                    state = state.copy(isLoading = false, errorMessage = "Ошибка загрузки избранного")
-                }
-            }
-            catch (e: Exception){
-                state = state.copy(isLoading = false, errorMessage = "Ошибка загрузки избранного")
-
+            } catch (e: Exception) {
+                state = state.copy(errorMessage = "Ошибка удаления из избранного")
             }
         }
     }

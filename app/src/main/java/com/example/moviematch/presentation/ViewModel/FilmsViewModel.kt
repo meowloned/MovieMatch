@@ -1,7 +1,6 @@
 package com.example.moviematch.presentation.ViewModel
 
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -13,6 +12,7 @@ import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.presentation.States.FilmsState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlin.Int
 
 class FilmsViewModel(
     private val getFilmsUseCase: GetFilmsUseCase,
@@ -55,16 +55,21 @@ class FilmsViewModel(
             viewModelScope.launch {
                 state = try {
                     addFavUseCase(userId, film.id)
-                    nextFilm()
                     state
                 } catch (e: Exception) {
-                    state.copy(errorMessage = "Не удалось добавить в избранное")
+                    state.copy(errorMessage = e.message ?: "Не удалось добавить в избранное")
                 }
             }
         }
+        nextFilm()
     }
 
     fun dislikeFilm(){
         nextFilm()
+    }
+
+    fun searchById(filmid: String): Film? {
+        val film = state.films.find { film -> film.id == filmid }
+        return film
     }
 }
