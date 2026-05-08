@@ -1,5 +1,6 @@
 package com.example.moviematch.presentation.UI.screens.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.moviematch.presentation.States.AuthState
@@ -33,7 +35,10 @@ fun RegisterScreen(
         true -> {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .background(
+                        color = Color(0xFFCFCED1),
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
@@ -41,7 +46,10 @@ fun RegisterScreen(
         }
         false -> {
             Column(modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(
+                    color = Color(0xFFCFCED1),
+                ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(

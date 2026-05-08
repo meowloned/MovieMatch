@@ -55,7 +55,9 @@ fun AppNavGraph(
         }
 
         composable("main") {
-            MainScreen(filmsViewModel = filmsViewModel)
+            MainScreen(
+                filmsViewModel = filmsViewModel,
+                onProfileClick = {navController.navigate("login")})
         }
     }
 }
