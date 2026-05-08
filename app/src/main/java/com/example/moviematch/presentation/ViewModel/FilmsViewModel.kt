@@ -7,12 +7,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviematch.domain.model.Film
+import com.example.moviematch.domain.usecases.AddFavUseCase
+import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.presentation.States.FilmsState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class FilmsViewModel(private val getFilmsUseCase: GetFilmsUseCase): ViewModel() {
+class FilmsViewModel(
+    private val getFilmsUseCase: GetFilmsUseCase,
+    private val addFavUseCase: AddFavUseCase,
+    private val getCurrentIdUseCase: GetCurrentIdUseCase): ViewModel() {
     var state by mutableStateOf(FilmsState())
         private set
     private var loadJob: Job? = null
@@ -44,7 +49,19 @@ class FilmsViewModel(private val getFilmsUseCase: GetFilmsUseCase): ViewModel() 
     }
 
     fun likeFilm(){
-        nextFilm()
+        val userId = getCurrentIdUseCase()
+        val film = getCurFilm()
+        if (userId != null && film != null) {
+            viewModelScope.launch {
+                state = try {
+                    addFavUseCase(userId, film.id)
+                    nextFilm()
+                    state
+                } catch (e: Exception) {
+                    state.copy(errorMessage = "Не удалось добавить в избранное")
+                }
+            }
+        }
     }
 
     fun dislikeFilm(){

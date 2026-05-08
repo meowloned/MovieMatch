@@ -4,8 +4,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.example.moviematch.data.local.FilmJsonDataSource
 import com.example.moviematch.data.repositoryImpl.AuthRepositoryImpl
+import com.example.moviematch.data.repositoryImpl.FavouriteFilmsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FilmsRepositoryImpl
+import com.example.moviematch.domain.repository.FavouriteFilmsRepository
 import com.example.moviematch.domain.repository.FilmsRepository
+import com.example.moviematch.domain.usecases.AddFavUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.domain.usecases.LoginUseCase
@@ -28,11 +31,13 @@ class MainActivity : ComponentActivity() {
             logoutUseCase = LogoutUseCase(authRepository)
         )
         val filmJsonDataSource = FilmJsonDataSource(this)
-
+        val favouriteFilmsRepository = FavouriteFilmsRepositoryImpl()
         val filmsRepository = FilmsRepositoryImpl(
             dataSource = filmJsonDataSource
         )
-        val filmsViewModel = FilmsViewModel(getFilmsUseCase = GetFilmsUseCase(filmsRepository))
+        val filmsViewModel = FilmsViewModel(getFilmsUseCase = GetFilmsUseCase(filmsRepository),
+            addFavUseCase = AddFavUseCase(favouriteFilmsRepository),
+            getCurrentIdUseCase = GetCurrentIdUseCase(authRepository))
         setContent {
             AppNavGraph(
                 authViewModel = authViewModel,
