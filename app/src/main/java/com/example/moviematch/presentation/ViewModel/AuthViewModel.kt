@@ -70,7 +70,6 @@ class AuthViewModel(
         }
     }
 
-
     fun logout(){
         state = state.copy(isLoading = true, errorMessage = "")
         logoutUseCase()

@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
@@ -28,7 +30,8 @@ fun BottomNavBar(
     selected: String,
     onFavClick: () -> Unit,
     onMainClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onFriendsClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -53,8 +56,15 @@ fun BottomNavBar(
         )
 
         BottomNavItem(
+            isSelected = selected == "friends",
+            icon = Icons.Default.AddCircle,
+            contentDescription = "Друзья",
+            onClick = onFriendsClick
+        )
+
+        BottomNavItem(
             isSelected = selected == "profile",
-            icon = Icons.Default.AccountCircle,
+            icon = Icons.Default.Person,
             contentDescription = "Профиль",
             onClick = onProfileClick
         )

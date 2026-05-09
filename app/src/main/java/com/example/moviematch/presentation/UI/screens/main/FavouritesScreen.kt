@@ -46,7 +46,8 @@ fun FavouritesScreen(
     filmsViewModel: FilmsViewModel,
     onProfileClick: () -> Unit,
     onFavClick: () -> Unit,
-    onMainClick: () -> Unit
+    onMainClick: () -> Unit,
+    onFriendsClick: () -> Unit
 ){
     LaunchedEffect(Unit) {
         favouritesViewModel.loadFavs()
@@ -67,8 +68,10 @@ fun FavouritesScreen(
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
                     CircularProgressIndicator(color = Color(0xFF2E3E6D))
+                    Text("Минуту, мы загружаем ваше избранное",
+                        textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick)
+                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick, onFriendsClick)
                 }
             }
             false -> {
@@ -105,7 +108,7 @@ fun FavouritesScreen(
                         }
 
                     }
-                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick)
+                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick, onFriendsClick)
                 }
             }
         }
