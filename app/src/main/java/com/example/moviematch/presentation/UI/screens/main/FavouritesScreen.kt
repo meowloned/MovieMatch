@@ -68,6 +68,7 @@ fun FavouritesScreen(
                 ) {
                     Spacer(modifier = Modifier.weight(1f))
                     CircularProgressIndicator(color = Color(0xFF2E3E6D))
+                    Spacer(modifier = Modifier.height(20.dp))
                     Text("Минуту, мы загружаем ваше избранное",
                         textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.weight(1f))
@@ -83,7 +84,8 @@ fun FavouritesScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         Text(
                             "У вас пока ещё нет понравившихся фильмов",
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            color = Color(0xFF2E3E6D)
                         )
                         Spacer(modifier = Modifier.weight(1f))
                     }

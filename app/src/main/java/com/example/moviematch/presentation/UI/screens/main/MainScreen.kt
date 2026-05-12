@@ -52,7 +52,8 @@ fun MainScreen(
     filmsViewModel: FilmsViewModel,
     onProfileClick: () -> Unit,
     onFavClick: () -> Unit,
-    onMainClick: () -> Unit
+    onMainClick: () -> Unit,
+    onFriendsClick: () -> Unit
 ) {
     val film = filmsViewModel.getCurFilm()
     val state = filmsViewModel.state
@@ -73,7 +74,7 @@ fun MainScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     CircularProgressIndicator(color = Color(0xFF2E3E6D))
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick)
+                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick, onFriendsClick)
                 }
             }
         }
@@ -133,7 +134,7 @@ fun MainScreen(
                         }
                     }
                     Spacer(modifier = Modifier.weight(0.8f))
-                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick)
+                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick, onFriendsClick)
                 }
             }
         }

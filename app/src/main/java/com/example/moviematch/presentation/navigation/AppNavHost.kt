@@ -8,17 +8,23 @@ import androidx.navigation.compose.rememberNavController
 import com.example.moviematch.presentation.UI.screens.auth.LoginScreen
 import com.example.moviematch.presentation.UI.screens.auth.RegisterScreen
 import com.example.moviematch.presentation.UI.screens.main.FavouritesScreen
+import com.example.moviematch.presentation.UI.screens.main.FriendsScreen
 import com.example.moviematch.presentation.UI.screens.main.MainScreen
+import com.example.moviematch.presentation.UI.screens.main.ProfileScreen
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
 import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
+import com.example.moviematch.presentation.ViewModel.FriendsViewModel
+import com.example.moviematch.presentation.ViewModel.ProfileViewModel
 
 
 @Composable
 fun AppNavGraph(
     authViewModel: AuthViewModel,
     filmsViewModel: FilmsViewModel,
-    favouritesViewModel: FavouritesViewModel
+    favouritesViewModel: FavouritesViewModel,
+    friendsViewModel: FriendsViewModel,
+    profileViewModel: ProfileViewModel
 ) {
     val navController = rememberNavController()
     val state = authViewModel.state
@@ -36,15 +42,16 @@ fun AppNavGraph(
     }
     NavHost(
         navController = navController,
-        startDestination = "login"
+        startDestination = if (state.isLoggedIn) "main" else "login"
     ) {
         composable("login") {
             LoginScreen(
                 authViewModel = authViewModel,
                 onRegisterClick = {
                     navController.navigate("register")
-                }
-            )
+                },
+                onMainClick = {navController.navigate("main")}
+                )
         }
 
         composable("register") {
@@ -52,16 +59,18 @@ fun AppNavGraph(
                 authViewModel = authViewModel,
                 onLoginClick = {
                     navController.navigate("login")
-                }
-            )
+                },
+                onMainClick = {navController.navigate("main")}
+                )
         }
 
         composable("main") {
             MainScreen(
                 filmsViewModel = filmsViewModel,
-                onProfileClick = {navController.navigate("login")},
+                onProfileClick = {navController.navigate("profile")},
                 onMainClick = {navController.navigate("main")},
-                onFavClick = {navController.navigate("favourites")}
+                onFavClick = {navController.navigate("favourites")},
+                onFriendsClick = {navController.navigate("friends")}
             )
         }
 
@@ -69,10 +78,33 @@ fun AppNavGraph(
             FavouritesScreen(
                 favouritesViewModel = favouritesViewModel,
                 filmsViewModel = filmsViewModel,
-                onProfileClick = {navController.navigate("login")},
+                onProfileClick = {navController.navigate("profile")},
                 onMainClick = {navController.navigate("main")},
-                onFavClick = {navController.navigate("favourites")}
+                onFavClick = {navController.navigate("favourites")},
+                onFriendsClick = {navController.navigate("friends")}
                 )
+        }
+        composable("friends"){
+            FriendsScreen(
+                friendsViewModel = friendsViewModel,
+                onProfileClick = {navController.navigate("profile")},
+                onMainClick = {navController.navigate("main")},
+                onFavClick = {navController.navigate("favourites")},
+                onFriendsClick = {navController.navigate("friends")}
+            )
+        }
+
+        composable("profile"){
+            ProfileScreen(
+                profileViewModel = profileViewModel,
+                onProfileClick = {navController.navigate("profile")},
+                onMainClick = {navController.navigate("main")},
+                onFavClick = {navController.navigate("favourites")},
+                onFriendsClick = {navController.navigate("friends")},
+                onLogClick = {navController.navigate("login") {
+                    popUpTo(0)
+                }}
+            )
         }
     }
 }

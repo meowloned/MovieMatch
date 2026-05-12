@@ -10,6 +10,7 @@ import com.example.moviematch.domain.usecases.AcceptRequestUseCase
 import com.example.moviematch.domain.usecases.GetAllFriendsUseCase
 import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
+import com.example.moviematch.domain.usecases.GetUserByIdUseCase
 import com.example.moviematch.domain.usecases.RejectRequestUseCase
 import com.example.moviematch.domain.usecases.SearchByEmailUseCase
 import com.example.moviematch.domain.usecases.SendRequestUseCase
@@ -25,7 +26,8 @@ class FriendsViewModel(
     private val rejectRequestUseCase: RejectRequestUseCase,
     private val sendRequestUseCase: SendRequestUseCase,
     private val getCurrentIdUseCase: GetCurrentIdUseCase,
-    private val searchByEmailUseCase: SearchByEmailUseCase
+    private val searchByEmailUseCase: SearchByEmailUseCase,
+    private val getUserByIdUseCase: GetUserByIdUseCase
 ): ViewModel() {
     var friendsState by mutableStateOf(FriendsState())
     private set
@@ -44,7 +46,12 @@ class FriendsViewModel(
         viewModelScope.launch {
             friendsState = try{
                 if (userId != null) {
-                    friendsState.copy(isLoading = false, friends = getAllFriendsUseCase(userId))
+                    val friends = getAllFriendsUseCase(userId)
+                    val emails = friends.associate { friend ->
+                        val user = getUserByIdUseCase(friend.friendId)
+                        friend.friendId to (user?.email ?: friend.friendId)
+                    }
+                    friendsState.copy(isLoading = false, friends = friends, usersEmails = emails)
                 } else{
                     friendsState.copy(isLoading = false, errorMessage = "Ошибка загрузки друзей")
                 }
@@ -61,7 +68,18 @@ class FriendsViewModel(
         viewModelScope.launch {
             requestState = try{
                 if (userId != null) {
-                    requestState.copy(isLoading = false, requests = getAllRequestsUseCase(userId))
+                    val requests = getAllRequestsUseCase(userId)
+
+                    val emails = requests.associate { request ->
+                        val user = getUserByIdUseCase(request.fromUserId)
+                        request.fromUserId to (user?.email ?: request.fromUserId)
+                    }
+
+                    requestState.copy(
+                        isLoading = false,
+                        requests = requests,
+                        usersEmails = emails
+                    )
                 } else{
                     requestState.copy(isLoading = false, errorMessage = "Ошибка загрузки заявки")
                 }
@@ -132,16 +150,14 @@ class FriendsViewModel(
     fun searchUser(email: String){
         viewModelScope.launch {
             findState = findState.copy(isLoading = true)
-            try {
-                val user = searchByEmailUseCase(email)
-                findState = if(user != null) {
-                    findState.copy(foundUser = user, isLoading = false)
-                } else{
-                    findState.copy(errorMessage = "Не удалось найти пользователя", isLoading = false)
-                }
-            } catch (e: Exception) {
-                findState = findState.copy(errorMessage = "Не удалось найти пользователя", isLoading = false)
+            val user = searchByEmailUseCase(email.trim())
+
+            findState = if (user != null) {
+                findState.copy(foundUser = user, isLoading = false)
+            } else {
+                findState.copy(errorMessage = "Не удалось найти пользователя", isLoading = false)
             }
         }
     }
+
 }

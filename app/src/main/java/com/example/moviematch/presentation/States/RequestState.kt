@@ -5,5 +5,6 @@ import com.example.moviematch.domain.model.Request
 data class RequestState (
     val requests: List<Request> = emptyList(),
     val isLoading: Boolean = false,
+    val usersEmails: Map<String, String> = emptyMap(),
     val errorMessage: String? = null
 )

@@ -31,7 +31,8 @@ import com.example.moviematch.presentation.ViewModel.AuthViewModel
 @Composable
 fun RegisterScreen(
     authViewModel: AuthViewModel,
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    onMainClick: ()-> Unit
 ) {
     val state = authViewModel.state
     when(state.isLoading){
@@ -75,19 +76,24 @@ fun RegisterScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF7087BB),
                         contentColor = Color.White),
-                    onClick = {authViewModel.register() }
+                    onClick = {authViewModel.register()
+                         onMainClick()
+                        authViewModel.onEmailChange("")
+                        authViewModel.onPasswordChange("")
+                    }
                 ) {
                     Text("Зарегистрироваться")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text("У меня уже есть аккаунт",
-                    color = Color.DarkGray,)
+                    color = Color.DarkGray)
                 Text("Вход",
                     style = TextStyle(textDecoration = TextDecoration.Underline),
                     color = Color.DarkGray,
                     modifier = Modifier.clickable{onLoginClick()})
+                Spacer(modifier = Modifier.height(20.dp))
                 if (!state.errorMessage.isNullOrEmpty()) {
-                    Text(text = state.errorMessage ?: "")
+                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D))
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }

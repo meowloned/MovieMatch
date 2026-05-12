@@ -29,7 +29,8 @@ import com.example.moviematch.presentation.ViewModel.AuthViewModel
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onMainClick: () -> Unit
 ) {
     val state = authViewModel.state
     when(state.isLoading){
@@ -73,7 +74,8 @@ fun LoginScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF7087BB),
                         contentColor = Color.White),
-                    onClick = {authViewModel.login() }
+                    onClick = {authViewModel.login()
+                    onMainClick()}
                 ) {
                     Text("Вход")
                 }
@@ -85,7 +87,7 @@ fun LoginScreen(
                     color = Color.DarkGray,
                     modifier = Modifier.clickable{onRegisterClick()})
                 if (!state.errorMessage.isNullOrEmpty()) {
-                    Text(text = state.errorMessage ?: "")
+                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D))
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }

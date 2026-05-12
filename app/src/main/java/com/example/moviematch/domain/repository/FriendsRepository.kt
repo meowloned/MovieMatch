@@ -12,4 +12,5 @@ interface FriendsRepository {
     suspend fun getRequests(toUserId:String): List<Request>
     suspend fun getFriends(userId: String): List<Friend>
     suspend fun searchByEmail(email:String): User?
+    suspend fun getUserById(userId : String): User?
 }

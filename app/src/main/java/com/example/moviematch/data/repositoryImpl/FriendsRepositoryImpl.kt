@@ -123,11 +123,32 @@ class FriendsRepositoryImpl: FriendsRepository {
             val timestamp = user.getLong("timestamp") ?: 0L
             return User(
                 userId,
-                email, timestamp
+                email,
+                timestamp
             )
         }
         else{
             return null
         }
+    }
+
+    override suspend fun getUserById(userId : String): User?{
+        val document = firestore.collection("users")
+            .document(userId)
+            .get()
+            .await()
+
+        if (!document.exists()) {
+            return null
+        }
+
+        val email = document.getString("email") ?: ""
+        val timestamp = document.getLong("timestamp") ?: 0L
+
+        return User(
+            userId = userId,
+            email = email,
+            timestamp = timestamp
+        )
     }
 }

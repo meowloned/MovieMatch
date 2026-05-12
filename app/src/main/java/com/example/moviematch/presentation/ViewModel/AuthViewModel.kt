@@ -65,7 +65,7 @@ class AuthViewModel(
                 state = state.copy(isLoading = false, isLoggedIn = true)
             }
             else{
-                state = state.copy(isLoading = false, errorMessage = "Пользователь с таким email уже есть")
+                state = state.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message ?: "Ошибка регистрации")
             }
         }
     }
@@ -75,4 +75,5 @@ class AuthViewModel(
         logoutUseCase()
         state = state.copy(isLoading = false, isLoggedIn = false)
     }
+
 }
