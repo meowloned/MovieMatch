@@ -140,6 +140,26 @@ fun MainScreen(
                                 } else {
                                     if (!friendsState.friends.isEmpty()) {
                                         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            item {
+                                                Card(
+                                                    modifier = Modifier
+                                                        .clickable{ filmsViewModel.selectOnMe()}                                                        .width(380.dp)
+
+                                                ){
+                                                    Row(modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .background(color = Color(0xFFE5EDFA))
+                                                        .height(40.dp),
+                                                        verticalAlignment = Alignment.CenterVertically){
+                                                        Spacer(modifier = Modifier.weight(1f))
+                                                        Text(
+                                                            "только я",
+                                                            color = Color(0xFF2E3E6D)
+                                                        )
+                                                        Spacer(modifier = Modifier.weight(1f))
+                                                    }
+                                                }
+                                            }
                                             items(
                                                 friendsState.friends
                                             ) { friend ->
@@ -152,10 +172,6 @@ fun MainScreen(
                                                     }
                                                 )
                                             }
-                                        }
-                                    } else {
-                                        Card() {
-                                            Text("только я")
                                         }
                                     }
                                 }
@@ -345,7 +361,7 @@ fun FriendCardSelect(
     Card(
         modifier = Modifier
         .clickable{onClick() }
-        .width(400.dp)
+        .width(380.dp)
 
     ){
         Row(modifier = Modifier
