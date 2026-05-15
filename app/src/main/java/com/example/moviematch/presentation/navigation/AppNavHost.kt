@@ -49,8 +49,7 @@ fun AppNavGraph(
                 authViewModel = authViewModel,
                 onRegisterClick = {
                     navController.navigate("register")
-                },
-                onMainClick = {navController.navigate("main")}
+                }
                 )
         }
 
@@ -59,14 +58,14 @@ fun AppNavGraph(
                 authViewModel = authViewModel,
                 onLoginClick = {
                     navController.navigate("login")
-                },
-                onMainClick = {navController.navigate("main")}
-                )
+                }
+            )
         }
 
         composable("main") {
             MainScreen(
                 filmsViewModel = filmsViewModel,
+                friendsViewModel = friendsViewModel,
                 onProfileClick = {navController.navigate("profile")},
                 onMainClick = {navController.navigate("main")},
                 onFavClick = {navController.navigate("favourites")},

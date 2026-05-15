@@ -21,6 +21,16 @@ class FilmsViewModel(
     var state by mutableStateOf(FilmsState())
         private set
     private var loadJob: Job? = null
+    var selectedId by mutableStateOf<String?>(null)
+
+    fun selectFriend(friendId: String){
+        selectedId = friendId
+    }
+
+    fun selectOnMe(){
+        selectedId = null
+    }
+
     fun loadFilms(){
         loadJob?.cancel()
         loadJob = viewModelScope.launch {

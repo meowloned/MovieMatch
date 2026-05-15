@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.moviematch.presentation.States.AuthState
@@ -32,7 +33,6 @@ import com.example.moviematch.presentation.ViewModel.AuthViewModel
 fun RegisterScreen(
     authViewModel: AuthViewModel,
     onLoginClick: () -> Unit,
-    onMainClick: ()-> Unit
 ) {
     val state = authViewModel.state
     when(state.isLoading){
@@ -60,7 +60,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = {newEmail -> authViewModel.onEmailChange(newEmail)},
-                    label = { Text("Введите email") },
+                    label = { Text("Введите email", color = Color(0xFF2E3E6D)) },
                     modifier = Modifier.padding(16.dp)
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -68,7 +68,7 @@ fun RegisterScreen(
                     value = state.password,
                     visualTransformation = PasswordVisualTransformation(),
                     onValueChange = {newPassword -> authViewModel.onPasswordChange(newPassword)},
-                    label = { Text("Введите пароль") },
+                    label = { Text("Введите пароль", color = Color(0xFF2E3E6D)) },
                     modifier = Modifier.padding(16.dp)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -77,7 +77,6 @@ fun RegisterScreen(
                         containerColor = Color(0xFF7087BB),
                         contentColor = Color.White),
                     onClick = {authViewModel.register()
-                         onMainClick()
                         authViewModel.onEmailChange("")
                         authViewModel.onPasswordChange("")
                     }
@@ -86,14 +85,14 @@ fun RegisterScreen(
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text("У меня уже есть аккаунт",
-                    color = Color.DarkGray)
+                    color = Color(0xFF2E3E6D))
                 Text("Вход",
                     style = TextStyle(textDecoration = TextDecoration.Underline),
-                    color = Color.DarkGray,
+                    color = Color(0xFF2E3E6D),
                     modifier = Modifier.clickable{onLoginClick()})
                 Spacer(modifier = Modifier.height(20.dp))
                 if (!state.errorMessage.isNullOrEmpty()) {
-                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D))
+                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D), textAlign = TextAlign.Center)
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }

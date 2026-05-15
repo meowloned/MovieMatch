@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviematch.presentation.UI.components.BottomNavBar
@@ -78,13 +79,14 @@ fun ProfileScreen(
                             color = Color(0xFF2E3E6D)
                         )
                     } else if (!state.errorMessage.isNullOrEmpty()) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D))
+                        Spacer(modifier = Modifier.height(20.dp) )
+                        Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D), textAlign = TextAlign.Center)
                     } else {
                         Spacer(modifier = Modifier.height(20.dp))
                         Text(
                             "вы не вошли в аккаунт",
-                            color = Color(0xFF2E3E6D)
+                            color = Color(0xFF2E3E6D),
+                            textAlign = TextAlign.Center
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))

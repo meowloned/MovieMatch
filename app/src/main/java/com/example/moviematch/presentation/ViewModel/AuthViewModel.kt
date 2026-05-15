@@ -44,14 +44,25 @@ class AuthViewModel(
 
 
     fun login(){
-        state = state.copy(isLoading = true, errorMessage = "")
+        state = state.copy(
+            isLoading = true,
+            isLoggedIn = false,
+            errorMessage = null
+        )
         viewModelScope.launch {
             val result = loginUseCase(state.email, state.password)
+            val currentId = getCurrentIdUseCase()
+            println("LOGIN RESULT = ${result.isSuccess}")
+            println("CURRENT USER ID = $currentId")
+            println("ERROR = ${result.exceptionOrNull()?.message}")
             if (result.isSuccess){
                 state = state.copy(isLoading = false, isLoggedIn = true)
             }
             else{
-                state = state.copy(isLoading = false, errorMessage = "Неверное имя пользователя/пароль")
+                state = state.copy(
+                    isLoading = false,
+                    errorMessage = result.exceptionOrNull()?.message ?: "Ошибка входа"
+                )
             }
         }
     }
@@ -68,12 +79,6 @@ class AuthViewModel(
                 state = state.copy(isLoading = false, errorMessage = result.exceptionOrNull()?.message ?: "Ошибка регистрации")
             }
         }
-    }
-
-    fun logout(){
-        state = state.copy(isLoading = true, errorMessage = "")
-        logoutUseCase()
-        state = state.copy(isLoading = false, isLoggedIn = false)
     }
 
 }

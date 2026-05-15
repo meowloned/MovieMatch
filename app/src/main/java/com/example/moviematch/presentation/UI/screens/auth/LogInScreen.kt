@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
@@ -30,7 +31,6 @@ import com.example.moviematch.presentation.ViewModel.AuthViewModel
 fun LoginScreen(
     authViewModel: AuthViewModel,
     onRegisterClick: () -> Unit,
-    onMainClick: () -> Unit
 ) {
     val state = authViewModel.state
     when(state.isLoading){
@@ -58,7 +58,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = state.email,
                     onValueChange = {newEmail -> authViewModel.onEmailChange(newEmail)},
-                    label = { Text("Введите email") },
+                    label = { Text("Введите email", color = Color(0xFF2E3E6D)) },
                     modifier = Modifier.padding(16.dp)
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -66,7 +66,7 @@ fun LoginScreen(
                     value = state.password,
                     visualTransformation = PasswordVisualTransformation(),
                     onValueChange = {newPassword -> authViewModel.onPasswordChange(newPassword)},
-                    label = { Text("Введите пароль") },
+                    label = { Text("Введите пароль", color = Color(0xFF2E3E6D)) },
                     modifier = Modifier.padding(16.dp)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
@@ -74,20 +74,23 @@ fun LoginScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF7087BB),
                         contentColor = Color.White),
-                    onClick = {authViewModel.login()
-                    onMainClick()}
+                    onClick = {
+                        authViewModel.login()
+                        authViewModel.onEmailChange("")
+                        authViewModel.onPasswordChange("")
+                    }
                 ) {
                     Text("Вход")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text("У меня ещё нет аккаунта",
-                    color = Color.DarkGray,)
+                    color = Color(0xFF2E3E6D))
                 Text("Регистрация",
                     style = TextStyle(textDecoration = TextDecoration.Underline),
-                    color = Color.DarkGray,
+                    color = Color(0xFF2E3E6D),
                     modifier = Modifier.clickable{onRegisterClick()})
                 if (!state.errorMessage.isNullOrEmpty()) {
-                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D))
+                    Text(text = state.errorMessage ?: "", color = Color(0xFF2E3E6D), textAlign = TextAlign.Center)
                 }
                 Spacer(modifier = Modifier.weight(1f))
             }

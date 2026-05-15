@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,7 +58,10 @@ fun FriendsScreen(
     val friendsState = friendsViewModel.friendsState
     var friendsExpanded by remember { mutableStateOf(false) }
     var requestsExpanded by remember { mutableStateOf(false) }
-
+    LaunchedEffect(Unit) {
+        friendsViewModel.loadFriends()
+        friendsViewModel.loadRequests()
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -144,7 +148,7 @@ fun FriendsScreen(
                     }
                     else{
                         if (!requestsState.requests.isEmpty()) {
-                            LazyColumn {
+                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 items(
                                     requestsState.requests
                                 ) { request ->
@@ -159,12 +163,65 @@ fun FriendsScreen(
                         }
                         else if (!findState.errorMessage.isNullOrEmpty()) {
                             Spacer(modifier = Modifier.height(20.dp))
-                            Text(text = findState.errorMessage ?: "", color = Color(0xFF2E3E6D))
+                            Text(text = findState.errorMessage ?: "", color = Color(0xFF2E3E6D), textAlign = TextAlign.Center)
                         }
                         else {
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 "У вас ещё нет заявок",
+                                color = Color(0xFF2E3E6D)
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            friendsExpanded = !friendsExpanded
+                        }
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Друзья",
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Start,
+                        color = Color(0xFF2E3E6D)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = if (friendsExpanded) "▲" else "▼",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.End,
+                        color = Color(0xFF2E3E6D)
+                    )
+                }
+
+                if (friendsExpanded) {
+                    if (friendsState.isLoading){
+                        Spacer(modifier = Modifier.weight(1f))
+                        CircularProgressIndicator(color = Color(0xFF2E3E6D))
+                    }
+                    else{
+                        if (!friendsState.friends.isEmpty()) {
+                            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                items(
+                                    friendsState.friends
+                                ) { friend ->
+                                    FriendCard(
+                                        friend,
+                                        friendsState
+                                    )
+                                }
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(
+                                "У вас ещё нет друзей",
                                 color = Color(0xFF2E3E6D)
                             )
                         }
@@ -201,59 +258,7 @@ fun FriendsScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        friendsExpanded = !friendsExpanded
-                    }
-                    .padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Друзья",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Start,
-                    color = Color(0xFF2E3E6D)
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = if (friendsExpanded) "▲" else "▼",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.End,
-                    color = Color(0xFF2E3E6D)
-                )
-            }
 
-            if (friendsExpanded) {
-                if (friendsState.isLoading){
-                    Spacer(modifier = Modifier.weight(1f))
-                    CircularProgressIndicator(color = Color(0xFF2E3E6D))
-                }
-                else{
-                    if (!friendsState.friends.isEmpty()) {
-                        LazyColumn {
-                            items(
-                                friendsState.friends
-                            ) { friend ->
-                                FriendCard(
-                                    friend,
-                                    friendsState
-                                )
-                            }
-                        }
-                    } else {
-                        Spacer(modifier = Modifier.height(20.dp))
-                        Text(
-                            "У вас ещё нет друзей",
-                            color = Color(0xFF2E3E6D)
-                        )
-                    }
-                }
-            }
             Spacer(modifier = Modifier.weight(1f))
             BottomNavBar("friends", onFavClick, onMainClick, onProfileClick, onFriendsClick)
         }
@@ -310,9 +315,12 @@ fun FriendCard(
     friend: Friend,
     friendsState: FriendsState
 ){
-    Card {
+    Card(modifier = Modifier
+        .fillMaxWidth()) {
         Row(modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(color = Color(0xFFE5EDFA))
+            .height(40.dp),
             verticalAlignment = Alignment.CenterVertically){
             Spacer(modifier = Modifier.weight(1f))
             Text(

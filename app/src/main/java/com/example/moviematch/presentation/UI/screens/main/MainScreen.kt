@@ -13,18 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,13 +41,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviematch.domain.model.Film
+import com.example.moviematch.domain.model.Friend
+import com.example.moviematch.presentation.States.FriendsState
 import com.example.moviematch.presentation.UI.components.BottomNavBar
 import com.example.moviematch.presentation.UI.components.getPosterResId
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
+import com.example.moviematch.presentation.ViewModel.FriendsViewModel
 
 @Composable
 fun MainScreen(
     filmsViewModel: FilmsViewModel,
+    friendsViewModel: FriendsViewModel,
     onProfileClick: () -> Unit,
     onFavClick: () -> Unit,
     onMainClick: () -> Unit,
@@ -57,6 +59,14 @@ fun MainScreen(
 ) {
     val film = filmsViewModel.getCurFilm()
     val state = filmsViewModel.state
+    var friendsExpanded by remember { mutableStateOf(false) }
+    val friendsState = friendsViewModel.friendsState
+    val selectedText =
+        if (filmsViewModel.selectedId == null) {
+            "только я"
+        } else {
+            friendsState.usersEmails[filmsViewModel.selectedId] ?: "друг"
+        }
     when(state.isLoading){
         true->{
             Box(
@@ -90,44 +100,107 @@ fun MainScreen(
                 Column(modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                    Spacer(modifier = Modifier.weight(1.2f))
-
-                    Box(
-                        modifier = Modifier
-                            .width(350.dp)
-                            .height(650.dp)
-                            .clip(RoundedCornerShape(30.dp))
-                            .background(
-                                color = Color(0xFFE5EDFA),
-                                shape = RoundedCornerShape(30.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (film == null) {
-                            Text("Фильмы закончились")
-                        } else {
-                            Column() {
-                                Spacer(modifier = Modifier.height(10.dp))
-                                FilmCard(film)
-                                Spacer(modifier = Modifier.height(10.dp))
-                                Row() {
-                                    Spacer(modifier = Modifier.width(5.dp))
-                                    Button(
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0xFF7087BB),
-                                            contentColor = Color.White
-                                        ),
-                                        onClick = { filmsViewModel.dislikeFilm() }) {
-                                        Text("Дизлайк")
+                    Spacer(modifier = Modifier.height(75.dp))
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFE5EDFA)
+                        )
+                    ){
+                        Row(
+                            modifier = Modifier
+                                .width(350.dp)
+                                .clickable {
+                                    friendsExpanded = !friendsExpanded
+                                }
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "ищу с: $selectedText",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Start,
+                                color = Color(0xFF2E3E6D)
+                            )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(
+                                text = if (friendsExpanded) "▲" else "▼",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.End,
+                                color = Color(0xFF2E3E6D)
+                            )
+                        }
+                    }
+                    if (friendsExpanded) {
+                        Spacer(modifier = Modifier.weight(1f))
+                            Column {
+                                if (friendsState.isLoading) {
+                                    CircularProgressIndicator(color = Color(0xFF2E3E6D))
+                                } else {
+                                    if (!friendsState.friends.isEmpty()) {
+                                        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                            items(
+                                                friendsState.friends
+                                            ) { friend ->
+                                                FriendCardSelect(
+                                                    friend = friend,
+                                                    friendsState = friendsState,
+                                                    onClick = {
+                                                        filmsViewModel.selectFriend(friend.friendId)
+                                                        friendsExpanded = false
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Card() {
+                                            Text("только я")
+                                        }
                                     }
-                                    Spacer(modifier = Modifier.width(105.dp))
-                                    Button(
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = Color(0xFF7087BB),
-                                            contentColor = Color.White
-                                        ),
-                                        onClick = { filmsViewModel.likeFilm() }) {
-                                        Text("Лайк")
+                                }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+                    else {
+                        Spacer(modifier = Modifier.weight(0.3f))
+                        Box(
+                            modifier = Modifier
+                                .width(350.dp)
+                                .height(650.dp)
+                                .clip(RoundedCornerShape(30.dp))
+                                .background(
+                                    color = Color(0xFFE5EDFA),
+                                    shape = RoundedCornerShape(30.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (film == null) {
+                                Text("Фильмы закончились")
+                            } else {
+                                Column() {
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    FilmCard(film)
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    Row() {
+                                        Spacer(modifier = Modifier.width(5.dp))
+                                        Button(
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF7087BB),
+                                                contentColor = Color.White
+                                            ),
+                                            onClick = { filmsViewModel.dislikeFilm() }) {
+                                            Text("Дизлайк")
+                                        }
+                                        Spacer(modifier = Modifier.width(105.dp))
+                                        Button(
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF7087BB),
+                                                contentColor = Color.White
+                                            ),
+                                            onClick = { filmsViewModel.likeFilm() }) {
+                                            Text("Лайк")
+                                        }
                                     }
                                 }
                             }
@@ -259,6 +332,33 @@ fun FilmCard(film: Film) {
                 )
 
             }
+        }
+    }
+}
+
+@Composable
+fun FriendCardSelect(
+    onClick: () -> Unit,
+    friend: Friend,
+    friendsState: FriendsState
+){
+    Card(
+        modifier = Modifier
+        .clickable{onClick() }
+        .width(400.dp)
+
+    ){
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color(0xFFE5EDFA))
+            .height(40.dp),
+            verticalAlignment = Alignment.CenterVertically){
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                friendsState.usersEmails[friend.friendId] ?: friend.friendId,
+                color = Color(0xFF2E3E6D)
+            )
+            Spacer(modifier = Modifier.weight(1f))
         }
     }
 }
