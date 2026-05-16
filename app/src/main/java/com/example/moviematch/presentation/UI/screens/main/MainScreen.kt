@@ -25,6 +25,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,15 +48,18 @@ import com.example.moviematch.presentation.UI.components.BottomNavBar
 import com.example.moviematch.presentation.UI.components.getPosterResId
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.ViewModel.FriendsViewModel
+import com.example.moviematch.presentation.ViewModel.SessionViewModel
 
 @Composable
 fun MainScreen(
     filmsViewModel: FilmsViewModel,
     friendsViewModel: FriendsViewModel,
+    sessionViewModel: SessionViewModel,
     onProfileClick: () -> Unit,
     onFavClick: () -> Unit,
     onMainClick: () -> Unit,
-    onFriendsClick: () -> Unit
+    onFriendsClick: () -> Unit,
+    onMatchFound: (String) -> Unit
 ) {
     val film = filmsViewModel.getCurFilm()
     val state = filmsViewModel.state
@@ -67,6 +71,14 @@ fun MainScreen(
         } else {
             friendsState.usersEmails[filmsViewModel.selectedId] ?: "друг"
         }
+    val sessionState = sessionViewModel.state
+    LaunchedEffect(sessionState.isMatched) {
+        if (sessionState.isMatched) {
+            sessionState.matchedFilmId?.let {
+                onMatchFound(it)
+            }
+        }
+    }
     when(state.isLoading){
         true->{
             Box(
@@ -143,7 +155,8 @@ fun MainScreen(
                                             item {
                                                 Card(
                                                     modifier = Modifier
-                                                        .clickable{ filmsViewModel.selectOnMe()}                                                        .width(380.dp)
+                                                        .clickable{ filmsViewModel.selectOnMe()
+                                                            sessionViewModel.finishSession()}                                                        .width(380.dp)
 
                                                 ){
                                                     Row(modifier = Modifier
@@ -168,6 +181,7 @@ fun MainScreen(
                                                     friendsState = friendsState,
                                                     onClick = {
                                                         filmsViewModel.selectFriend(friend.friendId)
+                                                        sessionViewModel.startSession(friend.friendId)
                                                         friendsExpanded = false
                                                     }
                                                 )
@@ -205,7 +219,9 @@ fun MainScreen(
                                                 containerColor = Color(0xFF7087BB),
                                                 contentColor = Color.White
                                             ),
-                                            onClick = { filmsViewModel.dislikeFilm() }) {
+                                            onClick = {
+                                                    filmsViewModel.dislikeFilm()
+                                            }) {
                                             Text("Дизлайк")
                                         }
                                         Spacer(modifier = Modifier.width(105.dp))
@@ -214,7 +230,14 @@ fun MainScreen(
                                                 containerColor = Color(0xFF7087BB),
                                                 contentColor = Color.White
                                             ),
-                                            onClick = { filmsViewModel.likeFilm() }) {
+                                            onClick = { if (filmsViewModel.selectedId == null) {
+                                                filmsViewModel.likeFilm()
+                                            }
+                                            else {
+                                                sessionViewModel.likeFilm(film)
+                                                filmsViewModel.likeFilm()
+                                            }
+                                            }) {
                                             Text("Лайк")
                                         }
                                     }

@@ -5,6 +5,7 @@ import com.example.moviematch.domain.model.MatchSession
 import com.example.moviematch.domain.model.SessionLike
 import com.example.moviematch.domain.repository.SessionRepository
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.tasks.await
 
 class SessionRepositoryImpl: SessionRepository {
@@ -102,5 +103,31 @@ class SessionRepositoryImpl: SessionRepository {
         )
         sessionDoc.set(like).await()
         return (checkMatch(sessionId, film.id, userId))
+    }
+
+    override fun listenSession(sessionId: String, onSessionChanged: (MatchSession?) -> Unit): ListenerRegistration {
+        return firestore
+            .collection("sessions")
+            .document(sessionId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    return@addSnapshotListener
+                }
+                if( snapshot!= null) {
+                    val sessionId = snapshot.getString("sessionId") ?: ""
+                    val firstUserId = snapshot.getString("firstUserId") ?: ""
+                    val secondUserId = snapshot.getString("secondUserId") ?: ""
+                    val status = snapshot.getString("status") ?: ""
+                    val matchedFilmId = snapshot.getString("matchedFilmId")
+                    val session = MatchSession(
+                        sessionId = sessionId,
+                        firstUserId = firstUserId,
+                        secondUserId = secondUserId,
+                        status = status,
+                        matchedFilmId = matchedFilmId,
+                    )
+                    onSessionChanged(session)
+                }
+            }
     }
 }

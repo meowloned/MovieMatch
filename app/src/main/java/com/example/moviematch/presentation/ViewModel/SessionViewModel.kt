@@ -10,7 +10,9 @@ import com.example.moviematch.domain.usecases.FinishSessionUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
 import com.example.moviematch.domain.usecases.GetOrCreateSessionUseCase
 import com.example.moviematch.domain.usecases.LikeFilmSessionUseCase
+import com.example.moviematch.domain.usecases.SessionListenerUseCase
 import com.example.moviematch.presentation.States.SessionState
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
 import kotlin.String
 
@@ -18,10 +20,30 @@ class SessionViewModel(
     private val getOrCreateSessionUseCase: GetOrCreateSessionUseCase,
     private val finishSessionUseCase: FinishSessionUseCase,
     private val likeFilmSessionUseCase: LikeFilmSessionUseCase,
-    private val getCurrentIdUseCase: GetCurrentIdUseCase
+    private val getCurrentIdUseCase: GetCurrentIdUseCase,
+    private val sessionListenerUseCase: SessionListenerUseCase
 ): ViewModel() {
     var state by mutableStateOf(SessionState())
     private set
+    private var sessionListener: ListenerRegistration? = null
+    private fun listenSession(sessionId: String){
+        sessionListener?.remove()
+        sessionListener = sessionListenerUseCase(
+            sessionId,
+            onSessionChanged = { session ->
+                if (session?.status == "matched") {
+                    state = state.copy(
+                        isMatched = true,
+                        matchedFilmId = session.matchedFilmId
+                    )
+                }
+            }
+        )
+    }
+    override fun onCleared() {
+        sessionListener?.remove()
+        super.onCleared()
+    }
     fun startSession(friendId:String){
         state = state.copy(isLoading = true)
         val userId = getCurrentIdUseCase()
@@ -35,6 +57,7 @@ class SessionViewModel(
                         errorMessage = null,
                         isMatched = false
                     )
+                    listenSession(session.sessionId)
                 } catch (e: Exception) {
                     state = state.copy(isLoading = false, errorMessage = "Не удалось создать сессию с другом")
                 }
@@ -69,6 +92,8 @@ class SessionViewModel(
             viewModelScope.launch {
                 try{
                     finishSessionUseCase(sessionId)
+                    sessionListener?.remove()
+                    sessionListener = null
                     state = SessionState()
                 }
                 catch(e: Exception){
@@ -76,5 +101,9 @@ class SessionViewModel(
                 }
             }
         }
+    }
+
+    fun resetMatch() {
+        state = state.copy(isMatched = false, matchedFilmId = null)
     }
 }

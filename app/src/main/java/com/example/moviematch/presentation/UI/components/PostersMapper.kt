@@ -29,7 +29,12 @@ fun getPosterResId(posterName: String): Int {
         "zootopia" -> R.drawable.zootopia
         "la_la_land" -> R.drawable.la_la_land
         "the_notebook" -> R.drawable.the_notebook
-
+        "the_curious_case_of_benjamin_button" -> R.drawable.the_curious_case_of_benjamin_button
+        "mononoke_hime" -> R.drawable.mononoke_hime
+        "kimi_no_na_wa" -> R.drawable.kimi_no_na_wa
+        "the_terminator" -> R.drawable.the_terminator
+        "what_women_want" -> R.drawable.what_women_want
+        "joker" -> R.drawable.joker
         else -> R.drawable.ic_launcher_background
     }
 }

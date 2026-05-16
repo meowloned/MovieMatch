@@ -7,17 +7,22 @@ import com.example.moviematch.data.repositoryImpl.AuthRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FavouriteFilmsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FilmsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FriendsRepositoryImpl
+import com.example.moviematch.data.repositoryImpl.SessionRepositoryImpl
 import com.example.moviematch.domain.repository.FavouriteFilmsRepository
 import com.example.moviematch.domain.repository.FilmsRepository
+import com.example.moviematch.domain.repository.SessionRepository
 import com.example.moviematch.domain.usecases.AcceptRequestUseCase
 import com.example.moviematch.domain.usecases.AddFavUseCase
+import com.example.moviematch.domain.usecases.FinishSessionUseCase
 import com.example.moviematch.domain.usecases.GetAllFriendsUseCase
 import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
 import com.example.moviematch.domain.usecases.GetCurrentEmailUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
 import com.example.moviematch.domain.usecases.GetFavsUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
+import com.example.moviematch.domain.usecases.GetOrCreateSessionUseCase
 import com.example.moviematch.domain.usecases.GetUserByIdUseCase
+import com.example.moviematch.domain.usecases.LikeFilmSessionUseCase
 import com.example.moviematch.domain.usecases.LoginUseCase
 import com.example.moviematch.domain.usecases.LogoutUseCase
 import com.example.moviematch.domain.usecases.RegisterUseCase
@@ -31,6 +36,7 @@ import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.ViewModel.FriendsViewModel
 import com.example.moviematch.presentation.ViewModel.ProfileViewModel
+import com.example.moviematch.presentation.ViewModel.SessionViewModel
 import com.example.moviematch.presentation.navigation.AppNavGraph
 
 class MainActivity : ComponentActivity() {
@@ -74,12 +80,20 @@ class MainActivity : ComponentActivity() {
             GetCurrentEmailUseCase(authRepository),
             LogoutUseCase(authRepository)
             )
+        val sessionRepository = SessionRepositoryImpl()
+        val sessionViewModel = SessionViewModel(
+            GetOrCreateSessionUseCase(sessionRepository),
+            FinishSessionUseCase(sessionRepository),
+            LikeFilmSessionUseCase(sessionRepository),
+            GetCurrentIdUseCase(authRepository),
+        )
         setContent {
             AppNavGraph(
                 authViewModel = authViewModel,
                 filmsViewModel = filmsViewModel,
                 favouritesViewModel = favouritesViewModel,
                 friendsViewModel = friendsViewModel,
+                sessionViewModel = sessionViewModel,
                 profileViewModel = profileViewModel
             )
         }

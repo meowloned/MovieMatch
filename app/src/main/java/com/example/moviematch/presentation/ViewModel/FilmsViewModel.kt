@@ -26,6 +26,11 @@ class FilmsViewModel(
     fun selectFriend(friendId: String){
         selectedId = friendId
     }
+    fun getFilmById(filmId: String): Film? {
+        return state.films.firstOrNull { film ->
+            film.id == filmId
+        }
+    }
 
     fun selectOnMe(){
         selectedId = null
@@ -82,4 +87,5 @@ class FilmsViewModel(
         val film = state.films.find { film -> film.id == filmid }
         return film
     }
+
 }

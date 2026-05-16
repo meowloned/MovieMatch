@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.moviematch.presentation.UI.screens.MatchScreen
 import com.example.moviematch.presentation.UI.screens.auth.LoginScreen
 import com.example.moviematch.presentation.UI.screens.auth.RegisterScreen
 import com.example.moviematch.presentation.UI.screens.main.FavouritesScreen
@@ -16,12 +17,14 @@ import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.ViewModel.FriendsViewModel
 import com.example.moviematch.presentation.ViewModel.ProfileViewModel
+import com.example.moviematch.presentation.ViewModel.SessionViewModel
 
 
 @Composable
 fun AppNavGraph(
     authViewModel: AuthViewModel,
     filmsViewModel: FilmsViewModel,
+    sessionViewModel: SessionViewModel,
     favouritesViewModel: FavouritesViewModel,
     friendsViewModel: FriendsViewModel,
     profileViewModel: ProfileViewModel
@@ -66,10 +69,33 @@ fun AppNavGraph(
             MainScreen(
                 filmsViewModel = filmsViewModel,
                 friendsViewModel = friendsViewModel,
+                sessionViewModel = sessionViewModel,
                 onProfileClick = {navController.navigate("profile")},
                 onMainClick = {navController.navigate("main")},
                 onFavClick = {navController.navigate("favourites")},
-                onFriendsClick = {navController.navigate("friends")}
+                onFriendsClick = {navController.navigate("friends")},
+                onMatchFound = { filmId ->
+                    navController.navigate("match/$filmId")
+                }            )
+        }
+
+        composable("match/{filmId}") { backStackEntry ->
+            val filmId = backStackEntry.arguments?.getString("filmId") ?: ""
+            val film = filmsViewModel.getFilmById(filmId)
+            MatchScreen(
+                matchFilm = film,
+                onContinueClick = {
+                    sessionViewModel.resetMatch()
+                    navController.popBackStack()
+                },
+                onFinishClick = {
+                    sessionViewModel.finishSession()
+                    navController.navigate("main") {
+                        popUpTo("main") {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 
