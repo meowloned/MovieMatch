@@ -214,7 +214,8 @@ fun FriendsScreen(
                                 ) { friend ->
                                     FriendCard(
                                         friend,
-                                        friendsState
+                                        friendsState,
+                                        { friendsViewModel.deleteFriend(friend.friendId) }
                                     )
                                 }
                             }
@@ -313,7 +314,8 @@ fun RequestCard(
 @Composable
 fun FriendCard(
     friend: Friend,
-    friendsState: FriendsState
+    friendsState: FriendsState,
+    onDelete: () -> Unit
 ){
     Card(modifier = Modifier
         .fillMaxWidth()) {
@@ -328,6 +330,13 @@ fun FriendCard(
                 color = Color(0xFF2E3E6D)
             )
             Spacer(modifier = Modifier.weight(1f))
+            IconButton({onDelete()}) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    tint = Color(0xFF4C5840),
+                    contentDescription = "Удалить"
+                )
+            }
         }
     }
 }
