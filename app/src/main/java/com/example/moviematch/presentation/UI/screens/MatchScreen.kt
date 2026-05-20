@@ -28,44 +28,61 @@ fun MatchScreen(
     onContinueClick: () -> Unit,
     onFinishClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ){
-    Spacer(modifier = Modifier.weight(0.3f))
-        Box(
-            modifier = Modifier
-                .width(350.dp)
-                .height(650.dp)
-                .clip(RoundedCornerShape(30.dp))
-                .background(Color(0xFFE5EDFA)),
-            contentAlignment = Alignment.Center
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .clip(RoundedCornerShape(30.dp))
+        .background(Color(0xFFBBD0ED)),
+        contentAlignment = Alignment.Center) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            Spacer(modifier = Modifier.weight(0.3f))
+            Text("У вас match!")
+            Spacer(modifier = Modifier.weight(0.3f))
+            Box(
+                modifier = Modifier
+                    .width(350.dp)
+                    .height(650.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(Color(0xFFE5EDFA)),
+                contentAlignment = Alignment.Center
             ) {
-                Text("У вас match!")
-                Spacer(modifier = Modifier.height(10.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                if (matchFilm == null) {
-                    Text("Фильм не найден")
-                } else {
-                    FilmCard(matchFilm)
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    Row {
-                        Button(onClick = onContinueClick) {
-                            Text("Продолжить")
-                        }
+                    if (matchFilm == null) {
+                        Text("Фильм не найден")
+                    } else {
+                        FilmCard(matchFilm)
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Row {
+                            Button(onClick = onContinueClick,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF7087BB),
+                                    contentColor = Color.White
+                                )) {
+                                Text("Продолжить")
+                            }
 
-                        Button(onClick = onFinishClick) {
-                            Text("Закончить")
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Button(onClick = onFinishClick,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF7087BB),
+                                    contentColor = Color.White
+                                )) {
+                                Text("Закончить")
+                            }
                         }
                     }
                 }
             }
+            Spacer(modifier = Modifier.weight(0.3f))
         }
     }
 }

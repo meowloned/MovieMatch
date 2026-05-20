@@ -13,6 +13,7 @@ import com.example.moviematch.domain.repository.FilmsRepository
 import com.example.moviematch.domain.repository.SessionRepository
 import com.example.moviematch.domain.usecases.AcceptRequestUseCase
 import com.example.moviematch.domain.usecases.AddFavUseCase
+import com.example.moviematch.domain.usecases.DeleteFriendUseCase
 import com.example.moviematch.domain.usecases.FinishSessionUseCase
 import com.example.moviematch.domain.usecases.GetAllFriendsUseCase
 import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
@@ -30,6 +31,7 @@ import com.example.moviematch.domain.usecases.RejectRequestUseCase
 import com.example.moviematch.domain.usecases.RemoveFavUseCase
 import com.example.moviematch.domain.usecases.SearchByEmailUseCase
 import com.example.moviematch.domain.usecases.SendRequestUseCase
+import com.example.moviematch.domain.usecases.SessionListenerUseCase
 import com.example.moviematch.presentation.UI.screens.main.ProfileScreen
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
 import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
@@ -74,7 +76,8 @@ class MainActivity : ComponentActivity() {
             SendRequestUseCase(friendsRepository),
             GetCurrentIdUseCase(authRepository),
             SearchByEmailUseCase(friendsRepository),
-            GetUserByIdUseCase(friendsRepository)
+            GetUserByIdUseCase(friendsRepository),
+            DeleteFriendUseCase(friendsRepository)
         )
         val profileViewModel = ProfileViewModel(
             GetCurrentEmailUseCase(authRepository),
@@ -86,6 +89,7 @@ class MainActivity : ComponentActivity() {
             FinishSessionUseCase(sessionRepository),
             LikeFilmSessionUseCase(sessionRepository),
             GetCurrentIdUseCase(authRepository),
+            SessionListenerUseCase(sessionRepository)
         )
         setContent {
             AppNavGraph(

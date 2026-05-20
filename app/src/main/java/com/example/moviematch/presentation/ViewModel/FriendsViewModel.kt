@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviematch.domain.model.User
 import com.example.moviematch.domain.usecases.AcceptRequestUseCase
+import com.example.moviematch.domain.usecases.DeleteFriendUseCase
 import com.example.moviematch.domain.usecases.GetAllFriendsUseCase
 import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
@@ -27,7 +28,8 @@ class FriendsViewModel(
     private val sendRequestUseCase: SendRequestUseCase,
     private val getCurrentIdUseCase: GetCurrentIdUseCase,
     private val searchByEmailUseCase: SearchByEmailUseCase,
-    private val getUserByIdUseCase: GetUserByIdUseCase
+    private val getUserByIdUseCase: GetUserByIdUseCase,
+    private val deleteFriendUseCase: DeleteFriendUseCase
 ): ViewModel() {
     var friendsState by mutableStateOf(FriendsState())
     private set
@@ -160,4 +162,23 @@ class FriendsViewModel(
         }
     }
 
+    fun deleteFriend(friendId: String) {
+        val userId = getCurrentIdUseCase()
+        if (userId == null) {
+            friendsState = friendsState.copy(errorMessage = "Не удалось удалить друга")
+            return
+        }
+        viewModelScope.launch {
+            try {
+                friendsState = friendsState.copy(isLoading = true)
+                deleteFriendUseCase(userId, friendId)
+                loadFriends()
+            } catch (e: Exception) {
+                friendsState = friendsState.copy(
+                    isLoading = false,
+                    errorMessage = "Не удалось удалить друга"
+                )
+            }
+        }
+    }
 }

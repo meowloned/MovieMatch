@@ -151,4 +151,22 @@ class FriendsRepositoryImpl: FriendsRepository {
             timestamp = timestamp
         )
     }
+
+    override suspend fun deleteFriend(friendId: String, currentUserId: String) {
+        firestore
+            .collection("users")
+            .document(currentUserId)
+            .collection("friends")
+            .document(friendId)
+            .delete()
+            .await()
+
+        firestore
+            .collection("users")
+            .document(friendId)
+            .collection("friends")
+            .document(currentUserId)
+            .delete()
+            .await()
+    }
 }
