@@ -1,8 +1,13 @@
 package com.example.moviematch.presentation.UI.screens.main
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,11 +40,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviematch.domain.model.Film
@@ -49,6 +59,8 @@ import com.example.moviematch.presentation.UI.components.getPosterResId
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.ViewModel.FriendsViewModel
 import com.example.moviematch.presentation.ViewModel.SessionViewModel
+import kotlin.math.roundToInt
+
 
 @Composable
 fun MainScreen(
@@ -156,7 +168,8 @@ fun MainScreen(
                                                 Card(
                                                     modifier = Modifier
                                                         .clickable{ filmsViewModel.selectOnMe()
-                                                            sessionViewModel.finishSession()}                                                        .width(380.dp)
+                                                            sessionViewModel.finishSession()}
+                                                        .width(380.dp)
 
                                                 ){
                                                     Row(modifier = Modifier
@@ -193,60 +206,44 @@ fun MainScreen(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                     else {
-                        Spacer(modifier = Modifier.weight(0.3f))
                         Box(
                             modifier = Modifier
-                                .width(350.dp)
-                                .height(650.dp)
-                                .clip(RoundedCornerShape(30.dp))
-                                .background(
-                                    color = Color(0xFFE5EDFA),
-                                    shape = RoundedCornerShape(30.dp)
-                                ),
+                                .fillMaxSize()
+                                .background(Color(0xFFBBD0ED)),
                             contentAlignment = Alignment.Center
+
                         ) {
-                            if (film == null) {
-                                Text("Фильмы закончились")
-                            } else {
-                                Column() {
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    FilmCard(film)
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    Row() {
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        Button(
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = Color(0xFF7087BB),
-                                                contentColor = Color.White
-                                            ),
-                                            onClick = {
-                                                    filmsViewModel.dislikeFilm()
-                                            }) {
-                                            Text("Дизлайк")
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.Bottom,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Spacer(modifier = Modifier.weight(0.3f))
+                                if (film == null) {
+                                    Text("Фильмы закончились")
+                                } else {
+                                    SwipeableFilmCard(
+                                        film = film,
+                                        onSwipedLeft = {
+                                            filmsViewModel.nextFilm()
+                                        },
+                                        onSwipedRight = {
+                                            filmsViewModel.likeFilm()
                                         }
-                                        Spacer(modifier = Modifier.width(105.dp))
-                                        Button(
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = Color(0xFF7087BB),
-                                                contentColor = Color.White
-                                            ),
-                                            onClick = { if (filmsViewModel.selectedId == null) {
-                                                filmsViewModel.likeFilm()
-                                            }
-                                            else {
-                                                sessionViewModel.likeFilm(film)
-                                                filmsViewModel.likeFilm()
-                                            }
-                                            }) {
-                                            Text("Лайк")
-                                        }
-                                    }
+                                    )
                                 }
-                            }
+                        Spacer(modifier = Modifier.weight(0.8f))
+                        BottomNavBar(
+                            "main",
+                            onFavClick,
+                            onMainClick,
+                            onProfileClick,
+                            onFriendsClick
+                        )
+                        }
                         }
                     }
-                    Spacer(modifier = Modifier.weight(0.8f))
-                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick, onFriendsClick)
                 }
             }
         }
@@ -399,5 +396,60 @@ fun FriendCardSelect(
             )
             Spacer(modifier = Modifier.weight(1f))
         }
+    }
+}
+
+@Composable
+fun SwipeableFilmCard(
+    film: Film,
+    onSwipedRight: () -> Unit,
+    onSwipedLeft: () -> Unit,
+    ) {
+    var offsetX by remember { mutableStateOf(0f) }
+
+    val backgroundColor by animateColorAsState(
+        targetValue = when {
+            offsetX > 0f -> Color(0xFFAABAAE)
+            offsetX < 0f -> Color(0xFFF0D9E4)
+            else -> Color(0xFFE5EDFA)
+        },
+        animationSpec = tween(durationMillis = 200)
+    )
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+
+    Box(
+        modifier = Modifier
+            .width(350.dp)
+            .height(650.dp)
+            .offset { IntOffset(offsetX.toInt(), 0) }
+            .clip(RoundedCornerShape(30.dp))
+            .background(backgroundColor)
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDrag = { change, dragAmount ->
+                        offsetX += dragAmount.x
+                    },
+                    onDragEnd = {
+                        val threshold = screenWidth.value * 0.25
+                        when {
+                            offsetX > threshold -> {
+                                onSwipedRight()
+                                offsetX = 0f
+                            }
+                            offsetX < -threshold -> {
+                                onSwipedLeft()
+                                offsetX = 0f
+                            }
+                            else -> {
+                                offsetX = 0f
+                            }
+                        }
+                        offsetX = 0f
+                    }
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        FilmCard(film)
     }
 }
