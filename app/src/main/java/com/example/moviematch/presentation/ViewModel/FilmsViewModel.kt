@@ -32,6 +32,10 @@ class FilmsViewModel(
         }
     }
 
+    var currentFilmIndex by mutableStateOf(0)
+        private set
+
+    
     fun selectOnMe(){
         selectedId = null
     }
@@ -78,6 +82,7 @@ class FilmsViewModel(
         }
         nextFilm()
     }
+
 
     fun dislikeFilm(){
         nextFilm()

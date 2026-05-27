@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -226,15 +227,22 @@ fun MainScreen(
                                 if (film == null) {
                                     Text("Фильмы закончились")
                                 } else {
-                                    SwipeableFilmCard(
-                                        film = film,
-                                        onSwipedLeft = {
-                                            filmsViewModel.nextFilm()
-                                        },
-                                        onSwipedRight = {
-                                            filmsViewModel.likeFilm()
-                                        }
-                                    )
+                                    key(film.id) {
+                                        SwipeableFilmCard(
+                                            film = film,
+                                            onSwipedLeft = {
+                                                filmsViewModel.nextFilm()
+                                            },
+                                            onSwipedRight = {
+                                                if (filmsViewModel.selectedId == null) {
+                                                    filmsViewModel.likeFilm()
+                                                } else {
+                                                    sessionViewModel.likeFilm(film)
+                                                    filmsViewModel.nextFilm()
+                                                }
+                                            }
+                                        )
+                                    }
                                 }
                         Spacer(modifier = Modifier.weight(0.8f))
                         BottomNavBar(
@@ -430,7 +438,7 @@ fun SwipeableFilmCard(
             .offset { IntOffset(offsetX.toInt(), 0) }
             .clip(RoundedCornerShape(30.dp))
             .background(backgroundColor)
-            .pointerInput(Unit) {
+            .pointerInput(film.id) {
                 detectDragGestures(
                     onDrag = { change, dragAmount ->
                         offsetX += dragAmount.x

@@ -94,7 +94,7 @@ class SessionRepositoryImpl: SessionRepository {
             .collection("sessions")
             .document(sessionId)
             .collection("likes")
-            .document("${userId}_${film.id}")
+            .document()
         val like = SessionLike(
             userId,
             film.id,
