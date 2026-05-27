@@ -8,17 +8,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,7 +70,15 @@ fun FavouritesScreen(
                     Text("Минуту, мы загружаем ваше избранное",
                         textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick, onFriendsClick)
+                    BottomNavBar("fav",
+                        onFavClick,
+                        onMainClick,
+                        onProfileClick,
+                        onFriendsClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                    )
                 }
             }
             false -> {
@@ -90,7 +96,7 @@ fun FavouritesScreen(
                         Spacer(modifier = Modifier.weight(1f))
                     }
                     else {
-                        Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(50.dp))
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             modifier = Modifier.weight(1f)
@@ -110,7 +116,15 @@ fun FavouritesScreen(
                         }
 
                     }
-                    BottomNavBar("fav", onFavClick, onMainClick, onProfileClick, onFriendsClick)
+                    BottomNavBar("fav",
+                        onFavClick,
+                        onMainClick,
+                        onProfileClick,
+                        onFriendsClick,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                    )
                 }
             }
         }
@@ -122,7 +136,7 @@ fun FavouritesScreen(
 @Composable
 fun FavoriteFilmCard(favFilm: Film?, onRemove:()->Unit) {
     Box(modifier = Modifier
-        .height(295.dp)
+        .height(290.dp)
         .background(
             color = Color(0xFFE5EDFA),
             shape = RoundedCornerShape(15.dp)

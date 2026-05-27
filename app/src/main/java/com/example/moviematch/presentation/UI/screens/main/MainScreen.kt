@@ -1,8 +1,6 @@
 package com.example.moviematch.presentation.UI.screens.main
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,8 +23,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -40,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
@@ -59,7 +55,6 @@ import com.example.moviematch.presentation.UI.components.getPosterResId
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 import com.example.moviematch.presentation.ViewModel.FriendsViewModel
 import com.example.moviematch.presentation.ViewModel.SessionViewModel
-import kotlin.math.roundToInt
 
 
 @Composable
@@ -108,7 +103,15 @@ fun MainScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     CircularProgressIndicator(color = Color(0xFF2E3E6D))
                     Spacer(modifier = Modifier.weight(1f))
-                    BottomNavBar("main", onFavClick, onMainClick, onProfileClick, onFriendsClick)
+                    BottomNavBar("main",
+                        onFavClick,
+                        onMainClick,
+                        onProfileClick,
+                        onFriendsClick,
+                        modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                    )
                 }
             }
         }
@@ -239,7 +242,10 @@ fun MainScreen(
                             onFavClick,
                             onMainClick,
                             onProfileClick,
-                            onFriendsClick
+                            onFriendsClick,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .navigationBarsPadding()
                         )
                         }
                         }
@@ -419,8 +425,8 @@ fun SwipeableFilmCard(
 
     Box(
         modifier = Modifier
-            .width(350.dp)
-            .height(650.dp)
+            .width(310.dp)
+            .height(610.dp)
             .offset { IntOffset(offsetX.toInt(), 0) }
             .clip(RoundedCornerShape(30.dp))
             .background(backgroundColor)
