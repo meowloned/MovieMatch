@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.moviematch.domain.model.Film
 import com.example.moviematch.domain.usecases.AddFavUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
+import com.example.moviematch.domain.usecases.GetFilmsNotInFavouritesUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.presentation.States.FilmsState
 import kotlinx.coroutines.Job
@@ -17,7 +18,8 @@ import kotlin.Int
 class FilmsViewModel(
     private val getFilmsUseCase: GetFilmsUseCase,
     private val addFavUseCase: AddFavUseCase,
-    private val getCurrentIdUseCase: GetCurrentIdUseCase): ViewModel() {
+    private val getCurrentIdUseCase: GetCurrentIdUseCase,
+    private val getFilmsNotInFavouritesUseCase: GetFilmsNotInFavouritesUseCase): ViewModel() {
     var state by mutableStateOf(FilmsState())
         private set
     private var loadJob: Job? = null
@@ -25,6 +27,7 @@ class FilmsViewModel(
 
     fun selectFriend(friendId: String){
         selectedId = friendId
+        loadFilms()
     }
     fun getFilmById(filmId: String): Film? {
         return state.films.firstOrNull { film ->
@@ -32,12 +35,10 @@ class FilmsViewModel(
         }
     }
 
-    var currentFilmIndex by mutableStateOf(0)
-        private set
 
-    
     fun selectOnMe(){
         selectedId = null
+        loadFilmsOnlyMe()
     }
 
     fun loadFilms(){
@@ -45,19 +46,39 @@ class FilmsViewModel(
         loadJob = viewModelScope.launch {
             state = state.copy(isLoading = true)
             state = try {
-                state.copy(films = getFilmsUseCase(), isLoading = false)
+                state.copy(films = getFilmsUseCase(), isLoading = false, currentIndex = 0)
             } catch(e: Exception){
-                state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false)
+                state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0)
             }
         }
     }
 
-    init{
-        loadFilms()
+    fun loadFilmsOnlyMe(){
+        loadJob?.cancel()
+        val userId = getCurrentIdUseCase()
+        if (userId != null) {
+            loadJob = viewModelScope.launch {
+                state = state.copy(isLoading = true)
+                state = try {
+                    state.copy(films = getFilmsNotInFavouritesUseCase(userId), isLoading = false, currentIndex = 0)
+                } catch (e: Exception) {
+                    state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0)
+                }
+            }
+        }
+        else {
+            state = state.copy(isLoading = false, errorMessage = "Пользователь не найден", currentIndex = 0)
+        }
     }
 
-    fun getCurFilm(): Film?{
-        return state.films.getOrNull(state.currentIndex)
+    init{
+        loadFilmsOnlyMe()
+    }
+
+    fun getCurFilm(): Film? {
+        if (state.films.isEmpty()) return null
+        val safeIndex = state.currentIndex.coerceIn(0, state.films.lastIndex)
+        return state.films.getOrNull(safeIndex)
     }
 
 

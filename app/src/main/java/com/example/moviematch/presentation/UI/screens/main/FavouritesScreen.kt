@@ -177,12 +177,14 @@ fun FavoriteFilmCard(favFilm: Film?, onRemove:()->Unit) {
                 Spacer(modifier = Modifier.height(7.dp))
             }
             else{
+                Spacer(modifier = Modifier.weight(1f))
                 Text(text = "Ошибка загрузки фильма",
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     color = Color(0xFF2E3E6D),
                     fontSize = 15.sp
                 )
+                Spacer(modifier = Modifier.weight(1f))
             }
         }
     }

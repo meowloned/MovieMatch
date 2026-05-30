@@ -19,7 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.moviematch.domain.model.Film
-import com.example.moviematch.presentation.UI.screens.main.FilmCard
+import com.example.moviematch.presentation.UI.components.FilmCard
 
 
 @Composable

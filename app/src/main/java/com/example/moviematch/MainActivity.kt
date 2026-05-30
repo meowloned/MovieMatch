@@ -20,6 +20,7 @@ import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
 import com.example.moviematch.domain.usecases.GetCurrentEmailUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
 import com.example.moviematch.domain.usecases.GetFavsUseCase
+import com.example.moviematch.domain.usecases.GetFilmsNotInFavouritesUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.domain.usecases.GetOrCreateSessionUseCase
 import com.example.moviematch.domain.usecases.GetUserByIdUseCase
@@ -65,7 +66,8 @@ class MainActivity : ComponentActivity() {
         )
         val filmsViewModel = FilmsViewModel(getFilmsUseCase = GetFilmsUseCase(filmsRepository),
             addFavUseCase = AddFavUseCase(favouriteFilmsRepository),
-            getCurrentIdUseCase = GetCurrentIdUseCase(authRepository))
+            getCurrentIdUseCase = GetCurrentIdUseCase(authRepository),
+            getFilmsNotInFavouritesUseCase = GetFilmsNotInFavouritesUseCase(filmsRepository, favouriteFilmsRepository))
 
         val friendsRepository = FriendsRepositoryImpl()
         val friendsViewModel = FriendsViewModel(
