@@ -90,10 +90,14 @@ fun AppNavGraph(
                 },
                 onFinishClick = {
                     sessionViewModel.finishSession()
+                    sessionViewModel.resetMatch()
+                    filmsViewModel.selectOnMe()
+
                     navController.navigate("main") {
                         popUpTo("main") {
-                            inclusive = true
+                            inclusive = false
                         }
+                        launchSingleTop = true
                     }
                 }
             )
