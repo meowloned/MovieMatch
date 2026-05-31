@@ -8,9 +8,6 @@ import com.example.moviematch.data.repositoryImpl.FavouriteFilmsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FilmsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.FriendsRepositoryImpl
 import com.example.moviematch.data.repositoryImpl.SessionRepositoryImpl
-import com.example.moviematch.domain.repository.FavouriteFilmsRepository
-import com.example.moviematch.domain.repository.FilmsRepository
-import com.example.moviematch.domain.repository.SessionRepository
 import com.example.moviematch.domain.usecases.AcceptRequestUseCase
 import com.example.moviematch.domain.usecases.AddFavUseCase
 import com.example.moviematch.domain.usecases.DeleteFriendUseCase
@@ -19,7 +16,7 @@ import com.example.moviematch.domain.usecases.GetAllFriendsUseCase
 import com.example.moviematch.domain.usecases.GetAllRequestsUseCase
 import com.example.moviematch.domain.usecases.GetCurrentEmailUseCase
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
-import com.example.moviematch.domain.usecases.GetFavsUseCase
+import com.example.moviematch.domain.usecases.GetFavouriteFullFilmsUseCase
 import com.example.moviematch.domain.usecases.GetFilmsNotInFavouritesUseCase
 import com.example.moviematch.domain.usecases.GetFilmsUseCase
 import com.example.moviematch.domain.usecases.GetOrCreateSessionUseCase
@@ -33,7 +30,6 @@ import com.example.moviematch.domain.usecases.RemoveFavUseCase
 import com.example.moviematch.domain.usecases.SearchByEmailUseCase
 import com.example.moviematch.domain.usecases.SendRequestUseCase
 import com.example.moviematch.domain.usecases.SessionListenerUseCase
-import com.example.moviematch.presentation.UI.screens.main.ProfileScreen
 import com.example.moviematch.presentation.ViewModel.AuthViewModel
 import com.example.moviematch.presentation.ViewModel.FavouritesViewModel
 import com.example.moviematch.presentation.ViewModel.FilmsViewModel
@@ -60,7 +56,7 @@ class MainActivity : ComponentActivity() {
         )
         val favouriteFilmsRepository = FavouriteFilmsRepositoryImpl()
         val favouritesViewModel = FavouritesViewModel(
-            getFavsUseCase = GetFavsUseCase(favouriteFilmsRepository),
+            getFavouriteFullFilmsUseCase = GetFavouriteFullFilmsUseCase(favouriteFilmsRepository, filmsRepository),
             removeFavUseCase = RemoveFavUseCase(favouriteFilmsRepository),
             getCurrentIdUseCase = GetCurrentIdUseCase(authRepository)
         )

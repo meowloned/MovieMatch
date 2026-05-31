@@ -107,9 +107,9 @@ fun FavouritesScreen(
                             val favoriteFilms = state.favs
                             items(favoriteFilms) { favfilm ->
                                 FavoriteFilmCard(
-                                    favFilm = filmsViewModel.searchById(favfilm.filmId),
+                                    favFilm = favfilm,
                                     onRemove = {
-                                        favouritesViewModel.removeFav(favfilm.filmId)
+                                        favouritesViewModel.removeFav(favfilm.id)
                                     }
                                 )
                             }

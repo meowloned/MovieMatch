@@ -6,13 +6,13 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moviematch.domain.usecases.GetCurrentIdUseCase
-import com.example.moviematch.domain.usecases.GetFavsUseCase
+import com.example.moviematch.domain.usecases.GetFavouriteFullFilmsUseCase
 import com.example.moviematch.domain.usecases.RemoveFavUseCase
 import com.example.moviematch.presentation.States.FavsState
 import kotlinx.coroutines.launch
 
 class FavouritesViewModel(
-    private val getFavsUseCase: GetFavsUseCase,
+    private val getFavouriteFullFilmsUseCase: GetFavouriteFullFilmsUseCase,
     private val removeFavUseCase: RemoveFavUseCase,
     private val getCurrentIdUseCase: GetCurrentIdUseCase
 ): ViewModel(){
@@ -28,7 +28,7 @@ class FavouritesViewModel(
         viewModelScope.launch {
             try{
                 if (userId != null) {
-                    state = state.copy(isLoading = false, favs = getFavsUseCase(userId))
+                    state = state.copy(isLoading = false, favs = getFavouriteFullFilmsUseCase(userId))
                 }
                 else{
                     state = state.copy(isLoading = false, errorMessage = "Ошибка загрузки избранного")
@@ -49,7 +49,7 @@ class FavouritesViewModel(
                     removeFavUseCase(userId, filmId)
                     state = state.copy(
                         isLoading = false,
-                        favs = state.favs.filter { it.filmId != filmId }
+                        favs = state.favs.filter { it.id != filmId }
                     )
                 } else {
                     state = state.copy(errorMessage = "Ошибка удаления из избранного")
