@@ -100,7 +100,43 @@ class FriendsRepositoryImpl: FriendsRepository {
     }
 
     override suspend fun sendRequest(fromUserId: String, toUserId: String) {
-        val request = firestore.collection("friendRequests").document()
+        if (fromUserId == toUserId){
+            throw Exception("Нельзя отправить заявку самому себе")
+        }
+        val friendexist = firestore
+            .collection("users")
+            .document(fromUserId)
+            .collection("friends")
+            .document(toUserId)
+            .get()
+            .await()
+            .exists()
+        if (friendexist){
+            throw Exception("Нельзя отправить заявку своему другу повторно")
+        }
+        val existingRequest_1 = firestore
+            .collection("friendRequests")
+            .whereEqualTo("fromUserId", fromUserId)
+            .whereEqualTo("toUserId", toUserId)
+            .whereEqualTo("status", "pending")
+            .get()
+            .await()
+
+        val existingRequest_2 = firestore
+            .collection("friendRequests")
+            .whereEqualTo("fromUserId", toUserId)
+            .whereEqualTo("toUserId", fromUserId)
+            .whereEqualTo("status", "pending")
+            .get()
+            .await()
+
+        if (!existingRequest_1.isEmpty || !existingRequest_2.isEmpty) {
+            throw Exception("Заявка уже отправлена")
+        }
+
+        val request = firestore
+            .collection("friendRequests")
+            .document()
         val timestamp = System.currentTimeMillis()
         request.set(
             Request(
