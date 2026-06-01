@@ -86,9 +86,9 @@ class FilmsViewModel(
         }
     }
 
-    init{
-        loadFilmsOnlyMe()
-    }
+//    init{
+//        loadFilmsOnlyMe()
+//    }
 
     fun getCurFilm(): Film? {
         return state.curFilm

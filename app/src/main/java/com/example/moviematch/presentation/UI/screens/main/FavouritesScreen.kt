@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.moviematch.domain.model.Film
@@ -135,7 +136,7 @@ fun FavouritesScreen(
 @Composable
 fun FavoriteFilmCard(favFilm: Film?, onRemove:()->Unit) {
     Box(modifier = Modifier
-        .height(290.dp)
+        .height(295.dp)
         .background(
             color = Color(0xFFE5EDFA),
             shape = RoundedCornerShape(15.dp)
@@ -167,13 +168,17 @@ fun FavoriteFilmCard(favFilm: Film?, onRemove:()->Unit) {
                         )
                     }
                 }
+                Spacer(modifier = Modifier.weight(1f))
                 Text(text = favFilm.title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     color = Color(0xFF2E3E6D),
-                    fontSize = 15.sp
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(start = 5.dp, end = 5.dp)
                 )
-                Spacer(modifier = Modifier.height(7.dp))
+                Spacer(modifier = Modifier.weight(1f))
             }
             else{
                 Spacer(modifier = Modifier.weight(1f))

@@ -5,5 +5,6 @@ data class SessionState (
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val isMatched: Boolean = false,
-    val matchedFilmId: String? = null
+    val matchedFilmId: String? = null,
+    val isFinished: Boolean = false
 )

@@ -29,17 +29,29 @@ fun AppNavGraph(
     friendsViewModel: FriendsViewModel,
     profileViewModel: ProfileViewModel
 ) {
+
     val navController = rememberNavController()
     val state = authViewModel.state
     LaunchedEffect(Unit) {
         authViewModel.checkCurrentUser()
     }
+    val sessionState = sessionViewModel.state
+
+    LaunchedEffect(sessionState.isFinished) {
+        if (sessionState.isFinished) {
+            filmsViewModel.selectOnMe()
+
+            navController.navigate("main") {
+                popUpTo("main") { inclusive = false }
+                launchSingleTop = true
+            }
+        }
+    }
     LaunchedEffect(state.isLoggedIn) {
         if (state.isLoggedIn) {
+            filmsViewModel.selectOnMe()
             navController.navigate("main") {
-                popUpTo("login") {
-                    inclusive = true
-                }
+                popUpTo("login") { inclusive = true }
             }
         }
     }

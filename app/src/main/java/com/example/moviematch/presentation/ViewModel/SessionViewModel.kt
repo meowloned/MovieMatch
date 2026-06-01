@@ -26,20 +26,30 @@ class SessionViewModel(
     var state by mutableStateOf(SessionState())
     private set
     private var sessionListener: ListenerRegistration? = null
-    private fun listenSession(sessionId: String){
+    private fun listenSession(sessionId: String) {
         sessionListener?.remove()
+
         sessionListener = sessionListenerUseCase(
             sessionId,
             onSessionChanged = { session ->
-                if (session?.status == "matched") {
-                    state = state.copy(
-                        isMatched = true,
-                        matchedFilmId = session.matchedFilmId
-                    )
+                when (session?.status) {
+                    "matched" -> {
+                        state = state.copy(
+                            isMatched = true,
+                            matchedFilmId = session.matchedFilmId
+                        )
+                    }
+
+                    "finished" -> {
+                        sessionListener?.remove()
+                        sessionListener = null
+                        state = SessionState(isFinished = true)
+                    }
                 }
             }
         )
     }
+
     override fun onCleared() {
         sessionListener?.remove()
         super.onCleared()

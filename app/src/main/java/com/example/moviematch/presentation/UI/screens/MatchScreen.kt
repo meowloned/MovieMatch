@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.moviematch.domain.model.Film
 import com.example.moviematch.presentation.UI.components.FilmCard
+import com.example.moviematch.presentation.UI.components.FilmCardMatch
 
 
 @Composable
@@ -30,7 +31,6 @@ fun MatchScreen(
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
-        .clip(RoundedCornerShape(30.dp))
         .background(Color(0xFFBBD0ED)),
         contentAlignment = Alignment.Center) {
         Column(
@@ -57,28 +57,7 @@ fun MatchScreen(
                     if (matchFilm == null) {
                         Text("Фильм не найден")
                     } else {
-                        FilmCard(matchFilm)
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Row {
-                            Button(onClick = onContinueClick,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF7087BB),
-                                    contentColor = Color.White
-                                )) {
-                                Text("Продолжить")
-                            }
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Button(onClick = onFinishClick,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFF7087BB),
-                                    contentColor = Color.White
-                                )) {
-                                Text("Закончить")
-                            }
-                        }
+                        FilmCardMatch(matchFilm, onFinishClick, onContinueClick)
                     }
                 }
             }
