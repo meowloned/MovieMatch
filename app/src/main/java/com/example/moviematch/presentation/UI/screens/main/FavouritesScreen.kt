@@ -41,7 +41,6 @@ import com.example.moviematch.presentation.ViewModel.FilmsViewModel
 @Composable
 fun FavouritesScreen(
     favouritesViewModel: FavouritesViewModel,
-    filmsViewModel: FilmsViewModel,
     onProfileClick: () -> Unit,
     onFavClick: () -> Unit,
     onMainClick: () -> Unit,

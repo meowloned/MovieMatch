@@ -106,7 +106,6 @@ fun AppNavGraph(
         composable("favourites"){
             FavouritesScreen(
                 favouritesViewModel = favouritesViewModel,
-                filmsViewModel = filmsViewModel,
                 onProfileClick = {navController.navigate("profile")},
                 onMainClick = {navController.navigate("main")},
                 onFavClick = {navController.navigate("favourites")},
