@@ -6,5 +6,6 @@ data class FilmsState(
     val films: List<Film> = emptyList(),
     val currentIndex: Int = 0,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val curFilm: Film? = null
 )

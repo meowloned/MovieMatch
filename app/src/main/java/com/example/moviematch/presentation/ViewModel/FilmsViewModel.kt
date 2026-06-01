@@ -23,16 +23,25 @@ class FilmsViewModel(
     var state by mutableStateOf(FilmsState())
         private set
     private var loadJob: Job? = null
+    private var shownFilmsId = mutableSetOf<String>()
     var selectedId by mutableStateOf<String?>(null)
 
     fun selectFriend(friendId: String){
         selectedId = friendId
         loadFilms()
     }
+
     fun getFilmById(filmId: String): Film? {
         return state.films.firstOrNull { film ->
             film.id == filmId
         }
+    }
+
+    fun randomFilm(){
+        val filmsavailible = state.films.filter {film ->
+            film.id !in shownFilmsId
+        }
+        state = state.copy(curFilm = filmsavailible.randomOrNull())
     }
 
 
@@ -44,11 +53,14 @@ class FilmsViewModel(
     fun loadFilms(){
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
+            shownFilmsId.clear()
             state = state.copy(isLoading = true)
-            state = try {
-                state.copy(films = getFilmsUseCase(), isLoading = false, currentIndex = 0)
+            try {
+                state = state.copy(films = getFilmsUseCase(), isLoading = false, currentIndex = 0)
+                randomFilm()
+
             } catch(e: Exception){
-                state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0)
+                state = state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0, curFilm = null)
             }
         }
     }
@@ -58,12 +70,15 @@ class FilmsViewModel(
         val userId = getCurrentIdUseCase()
         if (userId != null) {
             loadJob = viewModelScope.launch {
+                shownFilmsId.clear()
                 state = state.copy(isLoading = true)
-                state = try {
-                    state.copy(films = getFilmsNotInFavouritesUseCase(userId), isLoading = false, currentIndex = 0)
+                try {
+                    state = state.copy(films = getFilmsNotInFavouritesUseCase(userId), isLoading = false, currentIndex = 0)
+                    randomFilm()
                 } catch (e: Exception) {
-                    state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0)
+                    state = state.copy(errorMessage = "Не удалось загрузить фильм", isLoading = false, currentIndex = 0, curFilm = null)
                 }
+
             }
         }
         else {
@@ -76,16 +91,18 @@ class FilmsViewModel(
     }
 
     fun getCurFilm(): Film? {
-        if (state.films.isEmpty()) return null
-        val safeIndex = state.currentIndex.coerceIn(0, state.films.lastIndex)
-        return state.films.getOrNull(safeIndex)
+        return state.curFilm
     }
 
 
     fun nextFilm(){
-        if (state.currentIndex < state.films.size - 1) {
-            state = state.copy(currentIndex = state.currentIndex + 1)
+        val currentFilm = state.curFilm
+
+        if (currentFilm != null) {
+            shownFilmsId.add(currentFilm.id)
         }
+
+        randomFilm()
     }
 
     fun likeFilm(){

@@ -157,7 +157,8 @@ fun MainScreen(
                                                 Card(
                                                     modifier = Modifier
                                                         .clickable{ filmsViewModel.selectOnMe()
-                                                            sessionViewModel.finishSession()}
+                                                            sessionViewModel.finishSession()
+                                                            friendsExpanded = false}
                                                         .width(380.dp)
 
                                                 ){
