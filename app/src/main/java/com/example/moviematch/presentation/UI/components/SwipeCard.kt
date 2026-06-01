@@ -110,6 +110,7 @@ fun FilmCard(film: Film) {
         modifier = Modifier.width(300.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
         Image(
             painter = painterResource(id = imageId),
             contentDescription = film.title,
@@ -124,7 +125,7 @@ fun FilmCard(film: Film) {
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             color = Color(0xFF2E3E6D),
-            modifier = Modifier.width(200.dp)
+            modifier = Modifier.width(240.dp)
         )
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -139,9 +140,9 @@ fun FilmCard(film: Film) {
                 text = film.description_1,
                 fontSize = 15.sp,
                 color = Color(0xFF2E3E6D),
-                modifier = Modifier.width(250.dp)
+                modifier = Modifier.width(270.dp)
             )
-            Spacer(modifier = Modifier.weight(0.05f))
+            Spacer(modifier = Modifier.height(15.dp))
             Row(modifier = Modifier.width(270.dp)){
                 Text(text = "рейтинг: ",
                     fontSize = 13.sp,
@@ -193,16 +194,7 @@ fun FilmCard(film: Film) {
                     color = Color(0xFF2E3E6D),
                     modifier = Modifier.width(170.dp))
             }
-
-            Text(
-                text = "Узнать подробнее",
-                fontSize = 12.sp,
-                style = TextStyle(textDecoration = TextDecoration.Underline),
-                color = Color(0xFF495589),
-                modifier = Modifier.clickable {
-                    showDetails = !showDetails
-                }
-            )
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (showDetails) {
                 Text(
@@ -210,10 +202,21 @@ fun FilmCard(film: Film) {
                     fontSize = 14.sp,
                     textAlign = TextAlign.Justify,
                     color = Color(0xFF2E3E6D),
-                    modifier = Modifier.width(260.dp)
+                    modifier = Modifier.width(270.dp)
                 )
 
             }
         }
+        Spacer(modifier = Modifier.weight(1f))
+        Text(
+            text = "Узнать подробнее",
+            fontSize = 12.sp,
+            style = TextStyle(textDecoration = TextDecoration.Underline),
+            color = Color(0xFF495589),
+            modifier = Modifier.clickable {
+                showDetails = !showDetails
+            }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
